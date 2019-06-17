@@ -7,14 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
 
 import com.dicoding.picodiploma.myrecyclerview.adapter.CardViewHeroAdapter;
 import com.dicoding.picodiploma.myrecyclerview.adapter.GridHeroAdapter;
 import com.dicoding.picodiploma.myrecyclerview.adapter.ListHeroAdapter;
-import com.dicoding.picodiploma.myrecyclerview.listener.ItemClickSupport;
 import com.dicoding.picodiploma.myrecyclerview.model.Hero;
 import com.dicoding.picodiploma.myrecyclerview.model.HeroesData;
 
@@ -64,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
             Set data untuk title, list, dan mode yang dipilih
              */
             setActionBarTitle(title);
-            list.addAll(stateList);
+            if (stateList != null) {
+                list.addAll(stateList);
+            }
             setMode(stateMode);
         }
-
     }
 
     private void showSelectedHero(Hero hero) {
@@ -76,36 +74,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void showRecyclerList() {
         rvCategory.setLayoutManager(new LinearLayoutManager(this));
-        ListHeroAdapter listHeroAdapter = new ListHeroAdapter(this);
-        listHeroAdapter.setListHero(list);
+        ListHeroAdapter listHeroAdapter = new ListHeroAdapter(list);
         rvCategory.setAdapter(listHeroAdapter);
 
-        ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        listHeroAdapter.setOnItemClickCallback(new OnItemClickCallback() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedHero(list.get(position));
+            public void onItemClicked(Hero data) {
+                showSelectedHero(data);
             }
         });
     }
 
     private void showRecyclerGrid() {
         rvCategory.setLayoutManager(new GridLayoutManager(this, 2));
-        GridHeroAdapter gridHeroAdapter = new GridHeroAdapter(this);
-        gridHeroAdapter.setListHero(list);
+        GridHeroAdapter gridHeroAdapter = new GridHeroAdapter(list);
         rvCategory.setAdapter(gridHeroAdapter);
 
-        ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        gridHeroAdapter.setOnItemClickCallback(new OnItemClickCallback() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedHero(list.get(position));
+            public void onItemClicked(Hero data) {
+                showSelectedHero(data);
             }
         });
     }
 
     private void showRecyclerCardView() {
         rvCategory.setLayoutManager(new LinearLayoutManager(this));
-        CardViewHeroAdapter cardViewHeroAdapter = new CardViewHeroAdapter(this);
-        cardViewHeroAdapter.setListHero(list);
+        CardViewHeroAdapter cardViewHeroAdapter = new CardViewHeroAdapter(list);
         rvCategory.setAdapter(cardViewHeroAdapter);
     }
 
@@ -163,4 +158,9 @@ public class MainActivity extends AppCompatActivity {
         outState.putParcelableArrayList(STATE_LIST, list);
         outState.putInt(STATE_MODE, mode);
     }
+
+    public interface OnItemClickCallback {
+        void onItemClicked(Hero data);
+    }
 }
+

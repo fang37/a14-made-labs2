@@ -1,6 +1,7 @@
 package com.dicoding.picodiploma.myrecyclerview
 
 import android.os.Bundle
+import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -14,12 +15,13 @@ import com.dicoding.picodiploma.myrecyclerview.adapter.ListHeroAdapter
 import com.dicoding.picodiploma.myrecyclerview.model.Hero
 import com.dicoding.picodiploma.myrecyclerview.model.HeroesData
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rvCategory: RecyclerView
-    private var list: ArrayList<Hero>? = null
+    private var list: ArrayList<Hero> = arrayListOf()
     private var mode: Int = 0
-    private var title: String? = "Mode List"
+    private var title: String = "Mode List"
 
     companion object {
         private const val STATE_TITLE = "state_string"
@@ -35,8 +37,6 @@ class MainActivity : AppCompatActivity() {
         rvCategory = findViewById(R.id.rv_category)
         rvCategory.setHasFixedSize(true)
 
-        list = ArrayList()
-
         /*
         Gunakanlah savedinstancestate untuk menjaga data ketika terjadi config changes
          */
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             Ambil data dari method getListData, kemudian tampilkan recyclerviewlist
              */
             setActionBarTitle(title)
-            list!!.addAll(HeroesData.getListData())
+            list.addAll(HeroesData.getListData())
             showRecyclerList()
             mode = R.id.action_list
 
@@ -54,15 +54,15 @@ class MainActivity : AppCompatActivity() {
             /*
             Jika terjadi config changes maka ambil data yang dikirimkan dari saveinstancestate
              */
-            title = savedInstanceState.getString(STATE_TITLE)
-            val stateList = savedInstanceState.getParcelableArrayList<Hero>(STATE_LIST)
+            title = savedInstanceState.getString(STATE_TITLE) as String
+            val stateList = savedInstanceState.getParcelableArrayList<Hero>(STATE_LIST) as ArrayList
             val stateMode = savedInstanceState.getInt(STATE_MODE)
 
             /*
             Set data untuk title, list, dan mode yang dipilih
              */
             setActionBarTitle(title)
-            list!!.addAll(stateList!!)
+            list.addAll(stateList)
             setMode(stateMode)
         }
 
@@ -74,28 +74,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun showRecyclerList() {
         rvCategory.layoutManager = LinearLayoutManager(this)
-        val listHeroAdapter = list?.let { ListHeroAdapter(it) }
+        val listHeroAdapter = ListHeroAdapter(list)
         rvCategory.adapter = listHeroAdapter
 
-        listHeroAdapter?.onItemClickListener = { hero ->
+        listHeroAdapter.onItemClickListener = { hero ->
             showSelectedPresident(hero)
         }
-
     }
 
     private fun showRecyclerGrid() {
         rvCategory.layoutManager = GridLayoutManager(this, 2)
-        val gridHeroAdapter = list?.let { GridHeroAdapter(it) }
+        val gridHeroAdapter = GridHeroAdapter(list)
         rvCategory.adapter = gridHeroAdapter
 
-        gridHeroAdapter?.onItemClickListener = { hero ->
+        gridHeroAdapter.onItemClickListener = { hero ->
             showSelectedPresident(hero)
         }
     }
 
     private fun showRecyclerCardView() {
         rvCategory.layoutManager = LinearLayoutManager(this)
-        val cardViewHeroAdapter = list?.let { CardViewHeroAdapter(it) }
+        val cardViewHeroAdapter = CardViewHeroAdapter(list)
         rvCategory.adapter = cardViewHeroAdapter
     }
 
@@ -104,9 +103,9 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun setActionBarTitle(title: String?) {
+    private fun setActionBarTitle(title: String) {
         if (supportActionBar != null) {
-            supportActionBar!!.title = title
+            supportActionBar?.title= title
         }
     }
 
